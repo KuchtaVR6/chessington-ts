@@ -8,7 +8,7 @@ export default class Rook extends Piece {
         super(player);
     }
 
-    public getAvailableMoves(board: Board) {
+    public getAvailableMoves(board: Board) : Square[] {
         let myPosition: Square = board.findPiece(this);
 
         return [...this.computeOneHorizontal(board, myPosition), ...this.computeOneVertical(board, myPosition)]

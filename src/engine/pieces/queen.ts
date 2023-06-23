@@ -9,11 +9,11 @@ export default class Queen extends DiagonalPiece {
         super(player);
     }
 
-    public getAvailableMoves(board: Board) {
+    public getAvailableMoves(board: Board) : Square[] {
         let myPosition: Square = board.findPiece(this);
         return [
-            ...this.computeOneDiagonal(board, myPosition, 1), 
-            ...this.computeOneDiagonal(board, myPosition, -1),
+            ...this.computeTopLeftDiagonal(board, myPosition), 
+            ...this.computeTopRightDiagonal(board, myPosition),
             ...this.computeOneHorizontal(board, myPosition),
             ...this.computeOneVertical(board, myPosition)
         ];

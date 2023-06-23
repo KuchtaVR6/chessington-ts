@@ -8,8 +8,8 @@ export default class Bishop extends DiagonalPiece {
         super(player);
     }
 
-    public getAvailableMoves(board: Board) {
+    public getAvailableMoves(board: Board) : Square[] {
         let myPosition: Square = board.findPiece(this);
-        return [...this.computeOneDiagonal(board, myPosition, 1), ...this.computeOneDiagonal(board, myPosition, -1)];
+        return [...this.computeTopLeftDiagonal(board, myPosition), ...this.computeTopRightDiagonal(board, myPosition)];
     }
 }
