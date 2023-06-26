@@ -1,33 +1,33 @@
 import GameSettings from "../gameSettings";
 import Square from "../square";
-import Piece, { AttackResponse } from "./piece";
+import Piece, { CollisionResponse } from "./piece";
 import Board from "../board";
 
 export default abstract class DiagonalPiece extends Piece {
     private computeOneDiagonal(board: Board, myPosition: Square, direction: -1 | 1) : Square[] {
         let newPossibleMoves = new Array(0);
-        for(let index = myPosition.row - 1; index >= 0; index--) {
-            let diff = myPosition.row - index;
-            let col = myPosition.col + diff * direction;
-            let newSquare = this.getPositionWithBoard(board, index, col);
+        for(let rowIndex = myPosition.row - 1; rowIndex >= 0; rowIndex--) {
+            let distance = myPosition.row - rowIndex;
+            let colIndex = myPosition.col + distance * direction;
+            let newSquare = this.getPositionWithBoard(board, rowIndex, colIndex);
             if (newSquare) newPossibleMoves.push(newSquare);
             else {
-                let occupiedSquare = Square.at(index, col);
-                if (this.checkAttack(board, occupiedSquare) === AttackResponse.canAttack) {
+                let occupiedSquare = Square.at(rowIndex, colIndex);
+                if (this.checkCollision(board, occupiedSquare) === CollisionResponse.canTakeThePiece) {
                     newPossibleMoves.push(occupiedSquare);
                 }
                 break;
             }
         }
 
-        for (let index = myPosition.row + 1; index < GameSettings.BOARD_SIZE; index++) {
-            let diff = myPosition.row - index;
-            let col = myPosition.col + diff * direction;
-            let newSquare = this.getPositionWithBoard(board, index, col);
+        for (let rowIndex = myPosition.row + 1; rowIndex < GameSettings.BOARD_SIZE; rowIndex++) {
+            let distance = myPosition.row - rowIndex;
+            let colIndex = myPosition.col + distance * direction;
+            let newSquare = this.getPositionWithBoard(board, rowIndex, colIndex);
             if (newSquare) newPossibleMoves.push(newSquare);
             else {
-                let occupiedSquare = Square.at(index, col);
-                if (this.checkAttack(board, occupiedSquare) === AttackResponse.canAttack) {
+                let occupiedSquare = Square.at(rowIndex, colIndex);
+                if (this.checkCollision(board, occupiedSquare) === CollisionResponse.canTakeThePiece) {
                     newPossibleMoves.push(occupiedSquare);
                 }
                 break;

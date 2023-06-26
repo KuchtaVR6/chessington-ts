@@ -1,4 +1,4 @@
-import Piece, { AttackResponse } from './piece';
+import Piece, { CollisionResponse } from './piece';
 import Player from '../player';
 import Board from '../board';
 import Square from '../square';
@@ -28,8 +28,8 @@ export default class Pawn extends Piece {
         for (let deltaCol = -1; deltaCol <= 1; deltaCol+=2) {
             let square = this.getTransformedPosition(myPosition, direction, deltaCol)
             if (square) {
-                let attackResponse = this.checkAttack(board, square)
-                if (attackResponse === AttackResponse.canAttack) {
+                let attackResponse = this.checkCollision(board, square)
+                if (attackResponse === CollisionResponse.canTakeThePiece) {
                     newPossibleMoves.push(square)
                 }
             }

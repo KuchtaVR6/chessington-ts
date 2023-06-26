@@ -2,12 +2,11 @@ import Player from '../player';
 import Board from '../board';
 import Square from '../square';
 import GameSettings from '../gameSettings';
-import King from './king';
 
-export enum AttackResponse {
-    noAttack,
-    friendlyOrKing,
-    canAttack,
+export enum CollisionResponse {
+    noCollision,
+    cannotTakeThePiece,
+    canTakeThePiece,
 }
 
 enum LateralDirection {
@@ -31,17 +30,17 @@ export default class Piece {
         throw new Error('This method must be implemented, and return a list of available moves');
     }
 
-    protected checkAttack(board: Board, position: Square): AttackResponse {
+    protected checkCollision(board: Board, position: Square): CollisionResponse {
         let pieceInTheSquare = board.getPiece(position)
 
         if (pieceInTheSquare) {
             if (pieceInTheSquare.player === this.player || pieceInTheSquare.isKing()) {
-                return AttackResponse.friendlyOrKing
+                return CollisionResponse.cannotTakeThePiece
             }
-            else return AttackResponse.canAttack
+            else return CollisionResponse.canTakeThePiece
         }
         else {
-            return AttackResponse.noAttack
+            return CollisionResponse.noCollision
         }
     }
 
@@ -109,9 +108,9 @@ export default class Piece {
                 case LateralDirection.vertical: {consideredSquare = Square.at(index, myPosition.col); break;}
             }
 
-            let attackResponse = this.checkAttack(board, consideredSquare)
-            if (attackResponse !== AttackResponse.noAttack) {
-                if (attackResponse === AttackResponse.canAttack) {
+            let attackResponse = this.checkCollision(board, consideredSquare)
+            if (attackResponse !== CollisionResponse.noCollision) {
+                if (attackResponse === CollisionResponse.canTakeThePiece) {
                     newPossibleMoves.push(consideredSquare);
                 }
                 break;
