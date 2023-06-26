@@ -143,8 +143,6 @@ export default class Piece {
     }
 
     protected computeOneVertical(board: Board, myPosition: Square): Square[] {
-        let newPossibleMoves = new Array(0);
-
         return [
             ...this.computeToTheEdge(board, myPosition, LateralDirection.vertical, Change.increasing),
             ...this.computeToTheEdge(board, myPosition, LateralDirection.vertical, Change.decreasing)
@@ -187,6 +185,10 @@ export default class Piece {
     }
 
     public isKing(): boolean {
+        return false
+    }
+
+    public isPawn(): boolean {
         return false
     }
 }
