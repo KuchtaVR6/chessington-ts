@@ -10,11 +10,11 @@ export default class Pawn extends Piece {
 
     private move(board: Board, myPosition: Square, direction: -1 | 1, initialRow: Number) : Square[] {
         let newPossibleMoves = new Array(0);
-        let movedByOne : Square | undefined = this.getTransformedPositionWithBoard(board, myPosition, direction, 0)
+        let movedByOne : Square | undefined = this.getTransformedPositionWithBoardIfPossible(board, myPosition, direction, 0)
         if (movedByOne) {
             newPossibleMoves.push(movedByOne);
             if (myPosition.row == initialRow) {
-                let movedByTwo : Square | undefined = this.getTransformedPositionWithBoard(board, myPosition, direction * 2, 0)
+                let movedByTwo : Square | undefined = this.getTransformedPositionWithBoardIfPossible(board, myPosition, direction * 2, 0)
                 if (movedByTwo) {
                     newPossibleMoves.push(movedByTwo);
                 }
@@ -26,7 +26,7 @@ export default class Pawn extends Piece {
     private take(board : Board, myPosition : Square, direction: -1 | 1) : Square[] {
         let newPossibleMoves = new Array(0);
         for (let deltaCol = -1; deltaCol <= 1; deltaCol+=2) {
-            let square = this.getTransformedPosition(myPosition, direction, deltaCol)
+            let square = this.getTransformedPositionIfPossible(myPosition, direction, deltaCol)
             if (square) {
                 let attackResponse = this.checkCollision(board, square)
                 if (attackResponse === CollisionResponse.canTakeThePiece) {

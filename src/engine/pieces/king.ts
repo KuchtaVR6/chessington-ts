@@ -1,9 +1,9 @@
 import Player from '../player';
 import Board from '../board';
 import Square from '../square';
-import PieceThatStartWithALetterK from './kPiece';
+import Piece from './piece';
 
-export default class King extends PieceThatStartWithALetterK {
+export default class King extends Piece {
     public constructor(player: Player) {
         super(player);
     }
@@ -14,7 +14,7 @@ export default class King extends PieceThatStartWithALetterK {
 
         for (let deltaRow = -1; deltaRow <= 1; deltaRow++) {
             for (let deltaCol = -1; deltaCol <= 1; deltaCol++) {
-                let transformed = this.computeTranformedMovement(board, myPosition, deltaRow, deltaCol);
+                let transformed = this.computeTranformedMovementIfPossible(board, myPosition, deltaRow, deltaCol);
                 if (transformed) {
                     newPossibleMoves.push(transformed);
                 }

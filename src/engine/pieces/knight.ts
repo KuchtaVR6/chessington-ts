@@ -1,9 +1,9 @@
 import Player from '../player';
 import Board from '../board';
 import Square from '../square';
-import PieceThatStartWithALetterK from './kPiece';
+import Piece from './piece';
 
-export default class Knight extends PieceThatStartWithALetterK {
+export default class Knight extends Piece {
     public constructor(player: Player) {
         super(player);
     }
@@ -21,7 +21,7 @@ export default class Knight extends PieceThatStartWithALetterK {
         for (let deltaRow = 1; deltaRow <= 2; deltaRow++) {
             let deltaCol = 3 - deltaRow;
             combinationsOfNegativeAndPositive.map((combination) => {
-                let transformed = this.computeTranformedMovement(board, myPosition, deltaRow * combination[0], deltaCol * combination[1]);
+                let transformed = this.computeTranformedMovementIfPossible(board, myPosition, deltaRow * combination[0], deltaCol * combination[1]);
                 if (transformed) {
                     newPossibleMoves.push(transformed);
                 }

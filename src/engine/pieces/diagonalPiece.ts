@@ -9,7 +9,7 @@ export default abstract class DiagonalPiece extends Piece {
         for(let rowIndex = myPosition.row - 1; rowIndex >= 0; rowIndex--) {
             let distance = myPosition.row - rowIndex;
             let colIndex = myPosition.col + distance * direction;
-            let newSquare = this.getPositionWithBoard(board, rowIndex, colIndex);
+            let newSquare = this.getPositionWithBoardIfPossible(board, rowIndex, colIndex);
             if (newSquare) newPossibleMoves.push(newSquare);
             else {
                 let occupiedSquare = Square.at(rowIndex, colIndex);
@@ -23,7 +23,7 @@ export default abstract class DiagonalPiece extends Piece {
         for (let rowIndex = myPosition.row + 1; rowIndex < GameSettings.BOARD_SIZE; rowIndex++) {
             let distance = myPosition.row - rowIndex;
             let colIndex = myPosition.col + distance * direction;
-            let newSquare = this.getPositionWithBoard(board, rowIndex, colIndex);
+            let newSquare = this.getPositionWithBoardIfPossible(board, rowIndex, colIndex);
             if (newSquare) newPossibleMoves.push(newSquare);
             else {
                 let occupiedSquare = Square.at(rowIndex, colIndex);

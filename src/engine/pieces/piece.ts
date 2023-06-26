@@ -44,6 +44,20 @@ export default class Piece {
         }
     }
 
+    protected computeTranformedMovementIfPossible(board: Board, myPosition: Square, deltaRow: number, deltaCol: number) : Square | undefined {
+        let transformed = this.getTransformedPositionWithBoardIfPossible(board, myPosition, deltaRow, deltaCol);
+        if (transformed) return transformed;
+        else {
+            let attackPosition = this.getTransformedPositionIfPossible(myPosition, deltaRow, deltaCol)
+            if (attackPosition) {
+                let attackResponse = this.checkCollision(board, attackPosition)
+                if (attackResponse === CollisionResponse.canTakeThePiece) {
+                    return attackPosition;
+                }
+            }
+        }
+    }
+
     private forLoopParamsForComputeToEdge(myPosition: Square, direction: LateralDirection, change: Change) : { start : number, step : number, condition : (index : number) => boolean} {
         let start, step: number;
 
@@ -137,7 +151,7 @@ export default class Piece {
         ]
     }
 
-    protected getTransformedPosition(myPosition: Square, deltaRow: number, deltaCol: number): Square | undefined {
+    protected getTransformedPositionIfPossible(myPosition: Square, deltaRow: number, deltaCol: number): Square | undefined {
         let newRow = myPosition.row + deltaRow;
         let newCol = myPosition.col + deltaCol;
         if (newRow >= 0 && newRow < GameSettings.BOARD_SIZE && newCol >= 0 && newCol < GameSettings.BOARD_SIZE) {
@@ -147,7 +161,7 @@ export default class Piece {
         }
     }
 
-    protected getTransformedPositionWithBoard(board: Board, myPosition: Square, deltaRow: number, deltaCol: number): Square | undefined {
+    protected getTransformedPositionWithBoardIfPossible(board: Board, myPosition: Square, deltaRow: number, deltaCol: number): Square | undefined {
         let newRow = myPosition.row + deltaRow;
         let newCol = myPosition.col + deltaCol;
         if (newRow >= 0 && newRow < GameSettings.BOARD_SIZE && newCol >= 0 && newCol < GameSettings.BOARD_SIZE) {
@@ -158,9 +172,7 @@ export default class Piece {
         }
     }
 
-    protected getPositionWithBoard(board: Board, rowIndex: number, colIndex: number): Square | undefined {
-        let newRow = rowIndex;
-        let newCol = colIndex;
+    protected getPositionWithBoardIfPossible(board: Board, newRow: number, newCol: number): Square | undefined {
         if (newRow >= 0 && newRow < GameSettings.BOARD_SIZE && newCol >= 0 && newCol < GameSettings.BOARD_SIZE) {
             let finalSquare = Square.at(newRow, newCol);
             if (board.getPiece(finalSquare) === undefined) {
