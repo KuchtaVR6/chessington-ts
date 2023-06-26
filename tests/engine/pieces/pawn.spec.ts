@@ -99,6 +99,25 @@ describe('Pawn', () => {
             moves.should.deep.include(Square.at(5, 4));
         });
 
+        it('can en passant symmetrically if opposing pawn is in between', () => {
+            const leftPawn = new Pawn(Player.WHITE);
+            const rightPawn = new Pawn(Player.WHITE);
+            const opposingPawn = new Pawn(Player.BLACK);
+            board.setPiece(Square.at(3, 3), leftPawn);
+            board.setPiece(Square.at(4, 5), rightPawn);
+            board.setPiece(Square.at(6, 4), opposingPawn);
+            leftPawn.moveTo(board, Square.at(4, 3));
+            opposingPawn.moveTo(board, Square.at(4, 4));
+
+            const leftPawnMoves = leftPawn.getAvailableMoves(board);
+            const rightPawnMoves = rightPawn.getAvailableMoves(board);
+
+            leftPawnMoves.should.have.length(2);
+            leftPawnMoves.should.deep.include(Square.at(5, 4));
+            rightPawnMoves.should.have.length(2);
+            rightPawnMoves.should.deep.include(Square.at(5, 4));
+        });
+
         it('opposing pawn disappears after en passant', () => {
             const pawn = new Pawn(Player.WHITE);
             const opposingPawn = new Pawn(Player.BLACK);
@@ -111,7 +130,16 @@ describe('Pawn', () => {
 
             const pieceDisappeared = board.getPiece(Square.at(4, 4));
 
-            expect(pieceDisappeared).toBeUndefined();
+            // once we know how to check "should.be.undefined" to be deleted
+
+            let thisNeedsToBeDELETED = true;
+
+            if (pieceDisappeared === undefined) {
+                thisNeedsToBeDELETED.should.to.equal(true);
+            }
+            else {
+                thisNeedsToBeDELETED.should.to.equal(false);
+            }
         });
 
         it('cannot en passant if opposing pawn moved two squares but not immediately prior', () => {
@@ -134,7 +162,7 @@ describe('Pawn', () => {
             moves.should.not.deep.include(Square.at(5, 4));
         });
 
-        it ('cannot en passant if opposing pawn moved one square', () => {
+        it('cannot en passant if opposing pawn moved one square', () => {
             const pawn = new Pawn(Player.WHITE);
             const opposingPawn = new Pawn(Player.BLACK);
             board.setPiece(Square.at(3, 3), pawn);
@@ -148,7 +176,7 @@ describe('Pawn', () => {
             moves.should.not.deep.include(Square.at(4, 4));
         });
 
-        it ('cannot en passant if opposing pawn moved from another column', () => {
+        it('cannot en passant if opposing pawn moved from another column', () => {
             const pawn = new Pawn(Player.WHITE);
             const pawnToTake = new Pawn(Player.WHITE);
             const opposingPawn = new Pawn(Player.BLACK);
@@ -264,7 +292,7 @@ describe('Pawn', () => {
 
         moves.should.not.deep.include(Square.at(4, 3));
     });
-    
+
     it('can en passant if opposing pawn moved two squares', () => {
         const pawn = new Pawn(Player.BLACK);
         const opposingPawn = new Pawn(Player.WHITE);
@@ -278,6 +306,24 @@ describe('Pawn', () => {
         moves.should.deep.include(Square.at(2, 4));
     });
 
+    it('can en passant symmetrically if opposing pawn is in between', () => {
+        const leftPawn = new Pawn(Player.BLACK);
+        const rightPawn = new Pawn(Player.BLACK);
+        const opposingPawn = new Pawn(Player.WHITE);
+        board.setPiece(Square.at(3, 3), leftPawn);
+        board.setPiece(Square.at(3, 5), rightPawn);
+        board.setPiece(Square.at(1, 4), opposingPawn);
+        opposingPawn.moveTo(board, Square.at(3, 4));
+
+        const leftPawnMoves = leftPawn.getAvailableMoves(board);
+        const rightPawnMoves = rightPawn.getAvailableMoves(board);
+
+        leftPawnMoves.should.have.length(2);
+        leftPawnMoves.should.deep.include(Square.at(2, 4));
+        rightPawnMoves.should.have.length(2);
+        rightPawnMoves.should.deep.include(Square.at(2, 4));
+    });
+
     it('opposing pawn disappears after en passant', () => {
         const pawn = new Pawn(Player.BLACK);
         const opposingPawn = new Pawn(Player.WHITE);
@@ -288,10 +334,19 @@ describe('Pawn', () => {
 
         const pieceDisappeared = board.getPiece(Square.at(3, 4));
 
-        expect(pieceDisappeared === undefined).toBe(true);
+        // once we know how to check "should.be.undefined" to be deleted
+
+        let thisNeedsToBeDELETED = true;
+
+        if (pieceDisappeared === undefined) {
+            thisNeedsToBeDELETED.should.to.equal(true);
+        }
+        else {
+            thisNeedsToBeDELETED.should.to.equal(false);
+        }
     });
 
-    it ('cannot en passant if opposing pawn moved two squares but not immediately prior', () => {
+    it('cannot en passant if opposing pawn moved two squares but not immediately prior', () => {
         const pawn = new Pawn(Player.BLACK);
         const pawnToProgressTheGame = new Pawn(Player.BLACK);
         const opposingPawn = new Pawn(Player.WHITE);
@@ -310,7 +365,7 @@ describe('Pawn', () => {
         moves.should.not.deep.include(Square.at(2, 4));
     });
 
-    it ('cannot en passant if opposing pawn moved one square', () => {
+    it('cannot en passant if opposing pawn moved one square', () => {
         const pawn = new Pawn(Player.BLACK);
         const opposingPawn = new Pawn(Player.WHITE);
         board.setPiece(Square.at(3, 3), pawn);
@@ -323,7 +378,7 @@ describe('Pawn', () => {
         moves.should.not.deep.include(Square.at(2, 4));
     });
 
-    it ('cannot en passant if opposing pawn moved from another column', () => {
+    it('cannot en passant if opposing pawn moved from another column', () => {
         const pawn = new Pawn(Player.BLACK);
         const pawnToTake = new Pawn(Player.BLACK);
         const opposingPawn = new Pawn(Player.WHITE);

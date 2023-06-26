@@ -41,11 +41,11 @@ export default class Board {
 
     private checkIfMoveIsEnPassant(fromSquare : Square, toSquare : Square, movingPiece : Piece) : boolean {
         if(movingPiece.isPawn()) {
-            if(Math.abs(fromSquare.col - toSquare.col) === 1 && Math.abs(fromSquare.row - fromSquare.row) === 1)
+            if(Math.abs(fromSquare.col - toSquare.col) === 1 && Math.abs(fromSquare.row - toSquare.row) === 1)
             {
-                let potentiallyTaken = this.getPiece(Square.at(toSquare.col, fromSquare.row))
+                let potentiallyTaken = this.getPiece(Square.at(fromSquare.row, toSquare.col))
                 if (potentiallyTaken) {
-                    if(potentiallyTaken.player !== movingPiece.player) return true;
+                    return potentiallyTaken.player !== movingPiece.player
                 }
             }
         }
@@ -60,13 +60,14 @@ export default class Board {
                 toSquare : toSquare,
                 movingPiece : movingPiece
             }
+
             this.setPiece(toSquare, movingPiece);
+            this.setPiece(fromSquare, undefined);
 
             if(this.checkIfMoveIsEnPassant(fromSquare, toSquare, movingPiece)) {
-                this.setPiece(Square.at(toSquare.col, fromSquare.row), undefined)
-            } else {
-                this.setPiece(fromSquare, undefined);
+                this.setPiece(Square.at(fromSquare.row, toSquare.col), undefined)
             }
+
             this.currentPlayer = (this.currentPlayer === Player.WHITE ? Player.BLACK : Player.WHITE);
         }
     }
