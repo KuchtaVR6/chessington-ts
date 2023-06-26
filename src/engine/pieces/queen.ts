@@ -1,4 +1,4 @@
-import Piece from './piece';
+import Piece, { PieceTypes } from './piece';
 import Player from '../player';
 import Board from '../board';
 import DiagonalPiece from './diagonalPiece';
@@ -17,5 +17,9 @@ export default class Queen extends DiagonalPiece {
             ...this.computeOneHorizontal(board, myPosition),
             ...this.computeOneVertical(board, myPosition)
         ];
+    }
+
+    public getPieceType(): PieceTypes {
+        return PieceTypes.Queen;
     }
 }

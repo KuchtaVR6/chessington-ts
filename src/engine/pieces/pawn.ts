@@ -1,4 +1,4 @@
-import Piece, { CollisionResponse } from './piece';
+import Piece, { CollisionResponse, PieceTypes } from './piece';
 import Player from '../player';
 import Board from '../board';
 import Square from '../square';
@@ -24,14 +24,22 @@ export default class Pawn extends Piece {
         return newPossibleMoves;
     }
 
+    private calculateDistanceRows(firstPosition : Square, secondPosition : Square) : number {
+        return Math.abs(firstPosition.row - secondPosition.row)
+    }
+
+    private calculateDistanceCols(firstPosition : Square, secondPosition : Square) : number {
+        return Math.abs(firstPosition.col - secondPosition.col)
+    }
+
     private getEnPassantSquareIfPossible(board: Board, myPosition: Square, direction : -1 | 1): Square | undefined {
         let lastMove = board.getLastMoveIfExists()
 
         if (lastMove) {
-            if(lastMove.movingPiece.isPawn())
+            if(lastMove.movingPiece.getPieceType() === PieceTypes.Pawn)
                 if (lastMove.toSquare.row === myPosition.row) {
-                    if (Math.abs(lastMove.fromSquare.col - myPosition.col) === 1) {
-                        if (Math.abs(lastMove.fromSquare.row - lastMove.toSquare.row) === 2) {
+                    if (this.calculateDistanceCols(lastMove.fromSquare, myPosition) === 1) {
+                        if (this.calculateDistanceRows(lastMove.fromSquare, lastMove.toSquare) === 2) {
                             let newSquare = Square.at(lastMove.toSquare.row + direction, lastMove.toSquare.col)
                             return newSquare
                         }
@@ -51,6 +59,7 @@ export default class Pawn extends Piece {
                 }
             }
         }
+        
         let enPassantOutput = this.getEnPassantSquareIfPossible(board, myPosition, direction);
         if(enPassantOutput) newPossibleMoves.push(enPassantOutput)
 
@@ -85,7 +94,7 @@ export default class Pawn extends Piece {
         }
     }
 
-    public isPawn(): boolean {
-        return true
+    public getPieceType(): PieceTypes {
+        return PieceTypes.Pawn;
     }
 }

@@ -1,7 +1,7 @@
 import Player from '../player';
 import Board from '../board';
 import Square from '../square';
-import Piece from './piece';
+import Piece, { PieceTypes } from './piece';
 
 export default class Knight extends Piece {
     public constructor(player: Player) {
@@ -28,5 +28,9 @@ export default class Knight extends Piece {
             })
         }
         return newPossibleMoves;
+    }
+
+    public getPieceType(): PieceTypes {
+        return PieceTypes.Knight;
     }
 }

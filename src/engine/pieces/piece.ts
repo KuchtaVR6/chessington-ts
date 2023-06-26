@@ -19,7 +19,16 @@ enum Change {
     decreasing,
 }
 
-export default class Piece {
+export enum PieceTypes {
+    King,
+    Queen,
+    Rook,
+    Bishop,
+    Knight,
+    Pawn,
+}
+
+export default abstract class Piece {
     public player: Player;
 
     public constructor(player: Player) {
@@ -34,7 +43,7 @@ export default class Piece {
         let pieceInTheSquare = board.getPiece(position)
 
         if (pieceInTheSquare) {
-            if (pieceInTheSquare.player === this.player || pieceInTheSquare.isKing()) {
+            if (pieceInTheSquare.player === this.player || pieceInTheSquare.getPieceType() === PieceTypes.King) {
                 return CollisionResponse.cannotTakeThePiece
             }
             else return CollisionResponse.canTakeThePiece
@@ -184,11 +193,5 @@ export default class Piece {
         board.movePiece(currentSquare, newSquare);
     }
 
-    public isKing(): boolean {
-        return false
-    }
-
-    public isPawn(): boolean {
-        return false
-    }
+    public abstract getPieceType() : PieceTypes
 }

@@ -1,7 +1,7 @@
 import Player from './player';
 import GameSettings from './gameSettings';
 import Square from './square';
-import Piece from './pieces/piece';
+import Piece, { PieceTypes } from './pieces/piece';
 
 export type moveLog = {
     fromSquare : Square,
@@ -39,15 +39,27 @@ export default class Board {
         throw new Error('The supplied piece is not on the board');
     }
 
+    private calculateDistance(fromSquare : Square, toSquare : Square) : [number, number] {
+        return [Math.abs(fromSquare.row - toSquare.row), Math.abs(fromSquare.col - toSquare.col)]
+    }
+
     private checkIfMoveIsEnPassant(fromSquare : Square, toSquare : Square, movingPiece : Piece) : boolean {
-        if(movingPiece.isPawn()) {
-            if(Math.abs(fromSquare.col - toSquare.col) === 1 && Math.abs(fromSquare.row - toSquare.row) === 1)
+        if(movingPiece.getPieceType() === PieceTypes.Pawn) {
+            let distance = this.calculateDistance(fromSquare, toSquare)
+            if(distance[0] === 1 && distance[1] === 1)
             {
                 let potentiallyTaken = this.getPiece(Square.at(fromSquare.row, toSquare.col))
                 if (potentiallyTaken) {
                     return potentiallyTaken.player !== movingPiece.player
                 }
             }
+        }
+        return false;
+    }
+
+    private checkIfMoveIsCastling(fromSquare: Square, toSquare: Square, movingPiece: Piece) {
+        if (movingPiece.getPieceType() === PieceTypes.King) {
+            return this.calculateDistance(fromSquare, toSquare)[1] > 1
         }
         return false;
     }
@@ -65,9 +77,25 @@ export default class Board {
             this.setPiece(fromSquare, undefined);
 
             if(this.checkIfMoveIsEnPassant(fromSquare, toSquare, movingPiece)) {
+                console.log("En Passant happened, piece at ", Square.at(fromSquare.row, toSquare.col), " deleted.")
                 this.setPiece(Square.at(fromSquare.row, toSquare.col), undefined)
             }
 
+            if (this.checkIfMoveIsCastling(fromSquare, toSquare, movingPiece)) {
+                let rookMovedTo, rookWasAt;
+                if (toSquare.col === 6) {
+                    rookMovedTo = 5;
+                    rookWasAt = 7;
+                }
+                else {
+                    rookMovedTo = 3;
+                    rookWasAt = 0;
+                }
+                console.log("Castling happened, piece rook moved to ", Square.at(toSquare.row, rookMovedTo))
+                let rook = this.getPiece(Square.at(toSquare.row, rookWasAt));
+                this.setPiece(Square.at(toSquare.row, rookMovedTo), rook);
+                this.setPiece(Square.at(toSquare.row, rookWasAt), undefined);
+            }
             this.currentPlayer = (this.currentPlayer === Player.WHITE ? Player.BLACK : Player.WHITE);
         }
     }

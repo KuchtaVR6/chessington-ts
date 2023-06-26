@@ -1,9 +1,12 @@
 import Player from '../player';
 import Board from '../board';
 import Square from '../square';
-import Piece from './piece';
+import Piece, { PieceTypes } from './piece';
+import CastlingPiece from './castling';
+import Rook from './rook';
+import GameSettings from '../gameSettings';
 
-export default class King extends Piece {
+export default class King extends CastlingPiece {
     public constructor(player: Player) {
         super(player);
     }
@@ -20,10 +23,31 @@ export default class King extends Piece {
                 }
             }
         }
+
+        if (!this.getHasBeenMoved()) {
+            let rookPositions = [Square.at(myPosition.row, 7), Square.at(myPosition.row, 0)];
+            for (let i = 0; i < rookPositions.length; i++) {
+                let canCastle = false;
+                let rook = board.getPiece(rookPositions[i]);
+                if (rook?.getPieceType() === PieceTypes.Rook) {
+                    if (!(rook as Rook).getHasBeenMoved()) {
+                        canCastle = true;
+                        for (let j = (i === 0? 5 : 3); (i === 0 ? j < GameSettings.BOARD_SIZE - 1: j >= 1); (i === 0? j++ : j--)) {
+                            if (board.getPiece(Square.at(myPosition.row, j)) !== undefined) {
+                                canCastle = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (canCastle) newPossibleMoves.push((i === 0? Square.at(myPosition.row, 6) : Square.at(myPosition.row, 2)));
+            }
+        }
+        
         return newPossibleMoves;
     }
 
-    public isKing(): boolean {
-        return true
+    public getPieceType(): PieceTypes {
+        return PieceTypes.King;
     }
 }

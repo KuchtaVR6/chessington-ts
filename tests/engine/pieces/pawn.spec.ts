@@ -4,6 +4,7 @@ import Player from '../../../src/engine/player';
 import Square from '../../../src/engine/square';
 import Rook from '../../../src/engine/pieces/rook';
 import King from '../../../src/engine/pieces/king';
+import { assert } from 'chai';
 
 describe('Pawn', () => {
 
@@ -130,16 +131,7 @@ describe('Pawn', () => {
 
             const pieceDisappeared = board.getPiece(Square.at(4, 4));
 
-            // once we know how to check "should.be.undefined" to be deleted
-
-            let thisNeedsToBeDELETED = true;
-
-            if (pieceDisappeared === undefined) {
-                thisNeedsToBeDELETED.should.to.equal(true);
-            }
-            else {
-                thisNeedsToBeDELETED.should.to.equal(false);
-            }
+            assert(pieceDisappeared === undefined);
         });
 
         it('cannot en passant if opposing pawn moved two squares but not immediately prior', () => {
@@ -334,16 +326,7 @@ describe('Pawn', () => {
 
         const pieceDisappeared = board.getPiece(Square.at(3, 4));
 
-        // once we know how to check "should.be.undefined" to be deleted
-
-        let thisNeedsToBeDELETED = true;
-
-        if (pieceDisappeared === undefined) {
-            thisNeedsToBeDELETED.should.to.equal(true);
-        }
-        else {
-            thisNeedsToBeDELETED.should.to.equal(false);
-        }
+        assert(pieceDisappeared === undefined);
     });
 
     it('cannot en passant if opposing pawn moved two squares but not immediately prior', () => {
