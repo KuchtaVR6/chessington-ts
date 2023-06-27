@@ -2,18 +2,24 @@ import Player from './player';
 import GameSettings from './gameSettings';
 import Square from './square';
 import Piece, { PieceTypes } from './pieces/piece';
+import King from './pieces/king';
+import Queen from './pieces/queen';
+import Rook from './pieces/rook';
+import Bishop from './pieces/bishop';
+import Knight from './pieces/knight';
+import Pawn from './pieces/pawn';
 
 export type moveLog = {
-    fromSquare : Square,
-    toSquare : Square,
-    movingPiece : Piece
+    fromSquare: Square,
+    toSquare: Square,
+    movingPiece: Piece
 }
 
 export default class Board {
     public currentPlayer: Player;
     private readonly board: (Piece | undefined)[][];
 
-    private lastMoveRegister : moveLog | undefined;
+    private lastMoveRegister: moveLog | undefined;
 
     public constructor(currentPlayer?: Player) {
         this.currentPlayer = currentPlayer ? currentPlayer : Player.WHITE;
@@ -39,15 +45,14 @@ export default class Board {
         throw new Error('The supplied piece is not on the board');
     }
 
-    private calculateDistance(fromSquare : Square, toSquare : Square) : [number, number] {
+    private calculateDistance(fromSquare: Square, toSquare: Square): [number, number] {
         return [Math.abs(fromSquare.row - toSquare.row), Math.abs(fromSquare.col - toSquare.col)]
     }
 
-    private checkIfMoveIsEnPassant(fromSquare : Square, toSquare : Square, movingPiece : Piece) : boolean {
-        if(movingPiece.getPieceType() === PieceTypes.Pawn) {
+    private checkIfMoveIsEnPassant(fromSquare: Square, toSquare: Square, movingPiece: Piece): boolean {
+        if (movingPiece.getPieceType() === PieceTypes.Pawn) {
             let distance = this.calculateDistance(fromSquare, toSquare)
-            if(distance[0] === 1 && distance[1] === 1)
-            {
+            if (distance[0] === 1 && distance[1] === 1) {
                 let potentiallyTaken = this.getPiece(Square.at(fromSquare.row, toSquare.col))
                 if (potentiallyTaken) {
                     return potentiallyTaken.player !== movingPiece.player
@@ -64,19 +69,44 @@ export default class Board {
         return false;
     }
 
+    private getPieceInstance(pieceType: PieceTypes, player: Player) {
+        switch (pieceType) {
+            case PieceTypes.King: return new King(player);
+            case PieceTypes.Queen: return new Queen(player);
+            case PieceTypes.Rook: return new Rook(player);
+            case PieceTypes.Bishop: return new Bishop(player);
+            case PieceTypes.Knight: return new Knight(player);
+            case PieceTypes.Pawn: return new Pawn(player);
+        }
+    }
+
+    public replaceWithNewPiece(position: Square, pieceType: PieceTypes) {
+        if (pieceType === PieceTypes.King || pieceType === PieceTypes.Pawn)
+            throw new Error("Piece cannot be cast into King nor Pawn.")
+
+        const pieceToReplace = this.getPiece(position);
+        if (pieceToReplace) {
+            this.setPiece(position, undefined);
+            this.setPiece(position, this.getPieceInstance(pieceType, pieceToReplace.player));
+        }
+        else {
+            throw new Error("No piece present to be replaced.")
+        }
+    }
+
     public movePiece(fromSquare: Square, toSquare: Square) {
         const movingPiece = this.getPiece(fromSquare);
         if (!!movingPiece && movingPiece.player === this.currentPlayer) {
             this.lastMoveRegister = {
-                fromSquare : fromSquare,
-                toSquare : toSquare,
-                movingPiece : movingPiece
+                fromSquare: fromSquare,
+                toSquare: toSquare,
+                movingPiece: movingPiece
             }
 
             this.setPiece(toSquare, movingPiece);
             this.setPiece(fromSquare, undefined);
 
-            if(this.checkIfMoveIsEnPassant(fromSquare, toSquare, movingPiece)) {
+            if (this.checkIfMoveIsEnPassant(fromSquare, toSquare, movingPiece)) {
                 this.setPiece(Square.at(fromSquare.row, toSquare.col), undefined)
             }
 
@@ -98,7 +128,7 @@ export default class Board {
         }
     }
 
-    public getLastMoveIfExists() : moveLog | undefined {
+    public getLastMoveIfExists(): moveLog | undefined {
         return this.lastMoveRegister
     }
 
