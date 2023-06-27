@@ -11,7 +11,47 @@ export default class King extends CastlingPiece {
         super(player);
     }
 
-    public getAvailableMoves(board: Board) : Square[] {
+    public checkIfCastlingPathClear(board: Board, myPosition: Square, direction: -1 | 1) {
+
+        let forLoopLimiter: (index: number) => boolean;
+        if (direction === 1) {
+            forLoopLimiter = (index) => { return index < GameSettings.BOARD_SIZE - 1; }
+        }
+        else {
+            forLoopLimiter = (index) => { return index > 0; };
+        }
+
+        for (let colIndex = myPosition.col + direction; forLoopLimiter(colIndex); colIndex += direction) {
+            if (board.getPiece(Square.at(myPosition.row, colIndex)) !== undefined) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private canCastle(board: Board, myPosition: Square, direction: -1 | 1): boolean {
+        let rookPosition: number;
+
+        if (direction === 1) rookPosition = GameSettings.BOARD_SIZE - 1;
+        else rookPosition = 0;
+
+        let potentialRook = board.getPiece(Square.at(myPosition.row, rookPosition));
+        if (potentialRook?.getPieceType() === PieceTypes.Rook && !(potentialRook as Rook).getHasBeenMoved()) {
+            return this.checkIfCastlingPathClear(board, myPosition, direction);
+        }
+        return false
+    }
+
+    private canCastleLeft(board: Board, myPosition: Square): boolean {
+        return this.canCastle(board, myPosition, -1)
+    }
+
+    private canCastleRight(board: Board, myPosition: Square): boolean {
+        return this.canCastle(board, myPosition, 1)
+    }
+
+
+    public getAvailableMoves(board: Board): Square[] {
         let myPosition: Square = board.findPiece(this);
         let newPossibleMoves = new Array(0);
 
@@ -25,25 +65,10 @@ export default class King extends CastlingPiece {
         }
 
         if (!this.getHasBeenMoved()) {
-            let rookPositions = [Square.at(myPosition.row, 7), Square.at(myPosition.row, 0)];
-            for (let i = 0; i < rookPositions.length; i++) {
-                let canCastle = false;
-                let rook = board.getPiece(rookPositions[i]);
-                if (rook?.getPieceType() === PieceTypes.Rook) {
-                    if (!(rook as Rook).getHasBeenMoved()) {
-                        canCastle = true;
-                        for (let j = (i === 0? 5 : 3); (i === 0 ? j < GameSettings.BOARD_SIZE - 1: j >= 1); (i === 0? j++ : j--)) {
-                            if (board.getPiece(Square.at(myPosition.row, j)) !== undefined) {
-                                canCastle = false;
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (canCastle) newPossibleMoves.push((i === 0? Square.at(myPosition.row, 6) : Square.at(myPosition.row, 2)));
-            }
+            if (this.canCastleLeft(board, myPosition)) { newPossibleMoves.push(Square.at(myPosition.row, 2)) }
+            if (this.canCastleRight(board, myPosition)) { newPossibleMoves.push(Square.at(myPosition.row, 6)) }
         }
-        
+
         return newPossibleMoves;
     }
 

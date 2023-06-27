@@ -10,8 +10,7 @@ export default abstract class CastlingPiece extends Piece {
     }
 
     public moveTo(board: Board, newSquare: Square): void {
-        const currentSquare = board.findPiece(this);
-        board.movePiece(currentSquare, newSquare);
+        super.moveTo(board, newSquare)
         this.hasBeenMoved = true;
     }
 }

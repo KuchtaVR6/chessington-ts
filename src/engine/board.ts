@@ -77,7 +77,6 @@ export default class Board {
             this.setPiece(fromSquare, undefined);
 
             if(this.checkIfMoveIsEnPassant(fromSquare, toSquare, movingPiece)) {
-                console.log("En Passant happened, piece at ", Square.at(fromSquare.row, toSquare.col), " deleted.")
                 this.setPiece(Square.at(fromSquare.row, toSquare.col), undefined)
             }
 
@@ -91,7 +90,6 @@ export default class Board {
                     rookMovedTo = 3;
                     rookWasAt = 0;
                 }
-                console.log("Castling happened, piece rook moved to ", Square.at(toSquare.row, rookMovedTo))
                 let rook = this.getPiece(Square.at(toSquare.row, rookWasAt));
                 this.setPiece(Square.at(toSquare.row, rookMovedTo), rook);
                 this.setPiece(Square.at(toSquare.row, rookWasAt), undefined);
