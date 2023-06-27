@@ -93,7 +93,7 @@ describe('Check', () => {
         moves.should.not.deep.include(Square.at(2, 4))
     })
 
-    it('blocks that create new attack windows should be disallowed', () => {
+    it('checkmate removes movement from king', () => {
         const king = new King(Player.WHITE);
         const attackerTopLeft = new Rook(Player.BLACK);
         const attackerTopRight = new Rook(Player.BLACK);

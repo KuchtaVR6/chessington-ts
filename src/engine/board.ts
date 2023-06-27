@@ -139,4 +139,98 @@ export default class Board {
         }
         return board;
     }
+
+    private isMyKingSafe(player : Player) : boolean {
+
+    }
+
+    protected squareArrayIncludes(array : Square[], elementSearchedFor : Square) : boolean {
+        for(let elementOfArray of array) {
+            if (elementOfArray.equals(elementSearchedFor)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private returnCopyOfTheBoard() : (Piece | undefined)[][] {
+        let boardCopy : (Piece | undefined)[][] = [];
+        for(let row of this.board) {
+            let currentRowCopy : (Piece | undefined)[] = [];
+            for(let element of row) {
+                currentRowCopy.push(element);
+            }
+            boardCopy.push(currentRowCopy);
+        }
+        return boardCopy;
+    }
+
+    private getPiecesOfPlayer(player : Player) : Piece[] {
+        let arrayOfPieces : Piece[] = [];
+        for (let rowIndex = 0; rowIndex < GameSettings.BOARD_SIZE; rowIndex++) {
+            for (let colIndex = 0; colIndex < GameSettings.BOARD_SIZE; colIndex++) {
+                let currentPiece = this.getPiece(Square.at(rowIndex, colIndex));
+                if (currentPiece && currentPiece.player === player) {
+                    arrayOfPieces.push(currentPiece)
+                }
+            }
+        }
+        return arrayOfPieces;
+    }
+
+    private checkIfKingsMoveWouldCheckWhenMoved(kingsPosition : Square, deltaRow : -1 | 0 | 1, deltaCol: -1 | 0 | 1) {
+        if (deltaRow === 0 && deltaCol === 0) throw new Error("This function is not intendend for the position of the King")
+        let boardCopy = this.returnCopyOfTheBoard();
+
+        // removing the king
+        boardCopy[kingsPosition.row][kingsPosition.col] = undefined;
+
+        for (let rowIndex = 0; rowIndex < GameSettings.BOARD_SIZE; rowIndex++) {
+            for (let colIndex = 0; colIndex < GameSettings.BOARD_SIZE; colIndex++) {
+    }
+
+    private findCheckingTheKing(myPosition : Square, king : Piece) {
+        let squaresThatCanSave: Square[] = [];
+        let numberOfPiecesEndangeringTheKing = 0;
+        let neighbouringSquaresThatAreUnsafe : Square[] = [];
+        for (let rowIndex = 0; rowIndex < GameSettings.BOARD_SIZE; rowIndex++) {
+            for (let colIndex = 0; colIndex < GameSettings.BOARD_SIZE; colIndex++) {
+                let currentPiece = this.getPiece(Square.at(rowIndex, colIndex));
+                if (currentPiece !== undefined) {
+                    // piece present
+                    if (currentPiece.player !== king.player) {
+                        // piece is enemy
+                        let moves = currentPiece.getAvailableMoves(this)
+                        for (let kingDeltaRow = -1; kingDeltaRow <= 1; kingDeltaRow++) {
+                            for (let kingDeltaCol = -1; kingDeltaCol <= 1; kingDeltaCol++) {
+                                if (kingDeltaRow == 0 && kingDeltaCol == 0) {
+                                    if (this.squareArrayIncludes(moves, myPosition)) {
+                                        numberOfPiecesEndangeringTheKing += 1;
+                                        if (numberOfPiecesEndangeringTheKing > 1) {
+                                            return [];
+                                        }
+                                        // piece can attack
+                                        squaresThatCanSave = [...this.returnAllSpacesOnTheWay(myPosition, Square.at(rowIndex, colIndex)), Square.at(rowIndex, colIndex)]
+                                    }
+                                }
+                                else {
+                                    let squareThatNeighboursTheKing = Square.at(myPosition.row + kingDeltaRow, myPosition.col + kingDeltaCol);
+                                    if (this.squareArrayIncludes(moves, squareThatNeighboursTheKing)) {
+                                        neighbouringSquaresThatAreUnsafe.push(squareThatNeighboursTheKing);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (this.getPiece(myPosition)?.getPieceType() === PieceTypes.King) {
+            // pass
+        }
+        else {
+            
+        }
+    }
 }

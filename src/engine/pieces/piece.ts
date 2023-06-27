@@ -197,5 +197,14 @@ export default abstract class Piece {
         board.movePiece(currentSquare, newSquare);
     }
 
+    protected squareArrayIncludes(array : Square[], elementSearchedFor : Square) : boolean {
+        for(let elementOfArray of array) {
+            if (elementOfArray.equals(elementSearchedFor)) {
+                return true
+            }
+        }
+        return false
+    }
+
     public abstract getPieceType() : PieceTypes
 }
