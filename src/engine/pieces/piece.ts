@@ -131,9 +131,9 @@ export default abstract class Piece {
                 case LateralDirection.vertical: {consideredSquare = Square.at(index, myPosition.col); break;}
             }
 
-            let attackResponse = this.checkCollision(board, consideredSquare)
-            if (attackResponse !== CollisionResponse.noCollision) {
-                if (attackResponse === CollisionResponse.canTakeThePiece) {
+            let collisionResponse = this.checkCollision(board, consideredSquare)
+            if (collisionResponse !== CollisionResponse.noCollision) {
+                if (collisionResponse === CollisionResponse.canTakeThePiece) {
                     newPossibleMoves.push(consideredSquare);
                 }
                 break;
@@ -161,7 +161,7 @@ export default abstract class Piece {
     protected getTransformedPositionIfPossible(myPosition: Square, deltaRow: number, deltaCol: number): Square | undefined {
         let newRow = myPosition.row + deltaRow;
         let newCol = myPosition.col + deltaCol;
-        if (newRow >= 0 && newRow < GameSettings.BOARD_SIZE && newCol >= 0 && newCol < GameSettings.BOARD_SIZE) {
+        if (this.checkIfWithinBounds(newRow, newCol)) {
             if (!(newRow === myPosition.row && newCol === myPosition.col)) {
                 return Square.at(newRow, newCol);
             }
@@ -171,19 +171,23 @@ export default abstract class Piece {
     protected getTransformedPositionWithBoardIfPossible(board: Board, myPosition: Square, deltaRow: number, deltaCol: number): Square | undefined {
         let newRow = myPosition.row + deltaRow;
         let newCol = myPosition.col + deltaCol;
-        if (newRow >= 0 && newRow < GameSettings.BOARD_SIZE && newCol >= 0 && newCol < GameSettings.BOARD_SIZE) {
-            let finalSquare = Square.at(newRow, newCol);
-            if (board.getPiece(finalSquare) === undefined) {
-                return finalSquare
+        if (this.checkIfWithinBounds(newRow, newCol)) {
+            let newSquare = Square.at(newRow, newCol);
+            if (board.getPiece(newSquare) === undefined) {
+                return newSquare
             }
         }
     }
 
+    private checkIfWithinBounds(row : number, col : number) : boolean {
+        return row >= 0 && row < GameSettings.BOARD_SIZE && col >= 0 && col < GameSettings.BOARD_SIZE
+    }
+
     protected getPositionWithBoardIfPossible(board: Board, newRow: number, newCol: number): Square | undefined {
-        if (newRow >= 0 && newRow < GameSettings.BOARD_SIZE && newCol >= 0 && newCol < GameSettings.BOARD_SIZE) {
-            let finalSquare = Square.at(newRow, newCol);
-            if (board.getPiece(finalSquare) === undefined) {
-                return finalSquare
+        if (this.checkIfWithinBounds(newRow, newCol)) {
+            let newSquare = Square.at(newRow, newCol);
+            if (board.getPiece(newSquare) === undefined) {
+                return newSquare
             }
         }
     }

@@ -1,7 +1,8 @@
 import Piece, { CollisionResponse, PieceTypes } from './piece';
 import Player from '../player';
-import Board from '../board';
+import Board, { moveLog } from '../board';
 import Square from '../square';
+import GameSettings from '../gameSettings';
 
 export default class Pawn extends Piece {
 
@@ -11,40 +12,46 @@ export default class Pawn extends Piece {
 
     private move(board: Board, myPosition: Square, direction: -1 | 1, initialRow: Number): Square[] {
         let newPossibleMoves = new Array(0);
-        let movedByOne: Square | undefined = this.getTransformedPositionWithBoardIfPossible(board, myPosition, direction, 0)
-        if (movedByOne) {
-            newPossibleMoves.push(movedByOne);
+        let movedByOnePosition: Square | undefined = this.getTransformedPositionWithBoardIfPossible(board, myPosition, direction, 0)
+        if (movedByOnePosition) {
+            newPossibleMoves.push(movedByOnePosition);
             if (myPosition.row == initialRow) {
-                let movedByTwo: Square | undefined = this.getTransformedPositionWithBoardIfPossible(board, myPosition, direction * 2, 0)
-                if (movedByTwo) {
-                    newPossibleMoves.push(movedByTwo);
+                let movedByTwoPosition: Square | undefined = this.getTransformedPositionWithBoardIfPossible(board, myPosition, direction * 2, 0)
+                if (movedByTwoPosition) {
+                    newPossibleMoves.push(movedByTwoPosition);
                 }
             }
         }
         return newPossibleMoves;
     }
 
-    private calculateDistanceRows(firstPosition : Square, secondPosition : Square) : number {
+    private calculateDistanceRows(firstPosition: Square, secondPosition: Square): number {
         return Math.abs(firstPosition.row - secondPosition.row)
     }
 
-    private calculateDistanceCols(firstPosition : Square, secondPosition : Square) : number {
+    private calculateDistanceCols(firstPosition: Square, secondPosition: Square): number {
         return Math.abs(firstPosition.col - secondPosition.col)
     }
 
-    private getEnPassantSquareIfPossible(board: Board, myPosition: Square, direction : -1 | 1): Square | undefined {
+    private checkIfThePreviousMoveWasADouble(lastMove: moveLog) {
+        if (lastMove.movingPiece.getPieceType() === PieceTypes.Pawn) {
+            return this.calculateDistanceRows(lastMove.fromSquare, lastMove.toSquare) === 2
+        }
+        return false
+    }
+
+    private checkIfHorizonatallyNextTo(firstPosition: Square, secondPosition: Square) {
+        if (firstPosition.row === secondPosition.row)
+            return this.calculateDistanceCols(firstPosition, secondPosition) === 1
+        return false
+    }
+
+    private getEnPassantSquareIfPossible(board: Board, myPosition: Square, direction: -1 | 1): Square | undefined {
         let lastMove = board.getLastMoveIfExists()
 
-        if (lastMove) {
-            if(lastMove.movingPiece.getPieceType() === PieceTypes.Pawn)
-                if (lastMove.toSquare.row === myPosition.row) {
-                    if (this.calculateDistanceCols(lastMove.fromSquare, myPosition) === 1) {
-                        if (this.calculateDistanceRows(lastMove.fromSquare, lastMove.toSquare) === 2) {
-                            let newSquare = Square.at(lastMove.toSquare.row + direction, lastMove.toSquare.col)
-                            return newSquare
-                        }
-                    }
-                }
+        if (lastMove && this.checkIfThePreviousMoveWasADouble(lastMove) && this.checkIfHorizonatallyNextTo(myPosition, lastMove.toSquare)) {
+            let newSquare = Square.at(lastMove.toSquare.row + direction, lastMove.toSquare.col)
+            return newSquare
         }
     }
 
@@ -59,9 +66,9 @@ export default class Pawn extends Piece {
                 }
             }
         }
-        
+
         let enPassantOutput = this.getEnPassantSquareIfPossible(board, myPosition, direction);
-        if(enPassantOutput) newPossibleMoves.push(enPassantOutput)
+        if (enPassantOutput) newPossibleMoves.push(enPassantOutput)
 
         return newPossibleMoves
     }
@@ -96,5 +103,17 @@ export default class Pawn extends Piece {
 
     public getPieceType(): PieceTypes {
         return PieceTypes.Pawn;
+    }
+
+    public moveTo(board: Board, newSquare: Square): void {
+
+        super.moveTo(board, newSquare);
+        let gameRowLimit: number;
+        if (this.player === Player.WHITE) { gameRowLimit = GameSettings.BOARD_SIZE - 1 }
+        else { gameRowLimit = 0 }
+
+        if (newSquare.row === gameRowLimit) {
+            board.replaceWithNewPiece(newSquare, GameSettings.REPLACE_PAWN_WITH)
+        }
     }
 }

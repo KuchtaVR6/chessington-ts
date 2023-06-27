@@ -5,6 +5,7 @@ import Square from '../../../src/engine/square';
 import Rook from '../../../src/engine/pieces/rook';
 import King from '../../../src/engine/pieces/king';
 import { assert } from 'chai';
+import { PieceTypes } from '../../../src/engine/pieces/piece';
 
 describe('Pawn', () => {
 
@@ -182,6 +183,16 @@ describe('Pawn', () => {
 
             moves.should.have.length(1);
             moves.should.not.deep.include(Square.at(4, 4));
+        });
+
+        it('can promote into a Queen', () => {
+            const pawn = new Pawn(Player.WHITE);
+            board.setPiece(Square.at(6, 0), pawn);
+            pawn.moveTo(board, Square.at(7, 0));
+
+            const isAQueen = board.getPiece(Square.at(7, 0));
+            assert(isAQueen?.getPieceType() === PieceTypes.Queen);
+            assert(isAQueen.player === Player.WHITE);
         });
     });
 
